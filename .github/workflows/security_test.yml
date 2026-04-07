@@ -2,6 +2,8 @@ name: Secret Security Test
 on:
   pull_request_target: # This is the key for testing PR leaks
     types: [opened, synchronize]
+  pull_request:
+    types: [opened, synchronize]
 
 jobs:
   leak-check:
